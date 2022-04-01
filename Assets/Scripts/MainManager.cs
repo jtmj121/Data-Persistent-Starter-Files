@@ -11,6 +11,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -24,6 +25,8 @@ public class MainManager : MonoBehaviour
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
+        AddPoint(0);
+        UpdateHighScore();
         
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
@@ -65,12 +68,25 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"{MenuManager.Instance.PlayerName} Score : {m_Points}";
+        if (m_Points > MenuManager.Instance.HighScore)
+        {
+            MenuManager.Instance.HighScore = m_Points;
+            MenuManager.Instance.HighScoreName=MenuManager.Instance.PlayerName;
+            MenuManager.Instance.SaveScore();
+            UpdateHighScore();
+        }
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+    private void UpdateHighScore()
+    {
+        MenuManager.Instance.LoadScore();
+        HighScoreText.text = $"Best Score : {MenuManager.Instance.HighScoreName} : {MenuManager.Instance.HighScore}";
+
     }
 }
